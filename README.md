@@ -51,7 +51,7 @@ Solo se incluyen ciclos completos.
 ```python
 import pandas as pd
 
-URL = "https://raw.githubusercontent.com/USUARIO/REPOSITORIO/main/clima_ciclos.csv"
+URL = "https://raw.githubusercontent.com/galle010/clima-cosechas-jalisco-michoacan/main/clima_ciclos.csv"
 clima = pd.read_csv(URL, dtype={"cvegeo": str})
 ```
 
