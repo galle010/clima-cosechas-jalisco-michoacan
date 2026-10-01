@@ -56,9 +56,11 @@ Registros del Servicio de Información Agroalimentaria y Pesquera (SIAP) integra
 | `Siniestrada` | Superficie siniestrada (perdida) | ha |
 | `Volumenproduccion` | Volumen de producción | ton |
 | `Rendimiento` | Rendimiento (volumen / superficie cosechada) | ton/ha |
-| `Precio` | Precio por tonelada | $/ton |
+| `Precio` | Precio por tonelada (con datos 2003 – 2020) | $/ton |
 | `Valorproduccion` | Valor de la producción (volumen × precio) | $ |
-| `Preciomediorural` | Precio medio rural (solo disponible 2021 – 2025) | $/ton |
+| `Preciomediorural` | Precio por tonelada (con datos 2021 – 2025) | $/ton |
+
+> El SIAP reporta el mismo precio en `Precio` hasta 2020 y en `Preciomediorural` desde 2021. En `cultivos_clima.csv` ambas se unifican en una sola columna `precio`.
 
 ---
 
@@ -113,15 +115,21 @@ Cada registro de `cultivos.csv` con el clima de su municipio, año y ciclo.
 
 - **Tipo de unión:** left join (cultivos a la izquierda)
 - **Llave:** `cvegeo` + año + ciclo
-  - En cultivos, `cvegeo = Idestado * 1000 + Idmunicipio` (texto de 5 dígitos)
   - `Anio` ↔ `anio`, `Idciclo` ↔ `idciclo`
-- **Columnas:** las 25 de cultivos + `cvegeo` + las 12 variables climáticas (38 en total). Se quitaron de clima las columnas repetidas (`estado`, `municipio`, `ciclo`, `anio`, `idciclo`).
+- **Columnas (37 en total):** las de cultivos + `cvegeo` + `precio` + las 12 variables climáticas.
+
+### Transformaciones aplicadas
+
+- **`cvegeo`:** creada en cultivos como `Idestado * 1000 + Idmunicipio`, en texto de 5 dígitos.
+- **`precio`:** une `Precio` (2003 – 2020) y `Preciomediorural` (2021 – 2025); las dos columnas originales se eliminan.
+- **Columnas repetidas:** se quitaron de clima `estado`, `municipio`, `ciclo`, `anio` e `idciclo`, porque ya vienen en cultivos.
 
 ### Validaciones
 
 - Mismo número de filas antes y después de unir (8,877): no se perdieron ni duplicaron registros.
 - Relación muchos a uno verificada (`validate="many_to_one"`): cada municipio-año-ciclo tiene un solo registro de clima.
 - 0 registros sin clima.
+- 7 registros sin `precio` ni `Rendimiento` (2024 – 2025): municipios con siembra pero sin cosecha (volumen 0), por lo que es correcto que no tengan precio.
 
 ---
 
